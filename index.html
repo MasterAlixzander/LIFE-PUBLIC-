@@ -1,0 +1,361 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="manifest" href="./manifest.json?v=1121"><title>LIFE</title>
+
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#090b0f;--panel:#10141b;--card:#151a22;--card2:#1a202a;
+  --ink:#f5f7fa;--muted:#8f99a8;--line:#2a313d;
+  --accent:#78a9ff;--accent2:#a7c7ff;
+  --money:#65c18c;--work:#7fa7e8;--commit:#d79283;--life:#aa8fd4;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input,select{font:inherit;color:inherit}
+.app{max-width:1100px;margin:auto;padding:28px 18px 90px}
+header{display:flex;justify-content:space-between;align-items:end;gap:16px}
+h1{font-size:42px;letter-spacing:.16em;margin:0;font-weight:750}
+h2{letter-spacing:-.02em}
+.muted,small{color:var(--muted)}
+.status,.card,.metric{background:linear-gradient(145deg,var(--card),var(--panel));border:1px solid var(--line);border-radius:20px}
+.status{padding:20px;margin:24px 0;box-shadow:0 16px 42px #0004}
+.status h2{font-size:28px}
+.tabs,.layers{display:flex;gap:8px;overflow:auto;padding:2px}
+.tabs button,.layers button{border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:10px 16px;min-height:44px;white-space:nowrap;transition:background .25s ease,border-color .25s ease,transform .25s ease}
+.tabs .on,.layers .on{background:#202938;border-color:#43526a;color:#fff}
+.view{display:none;margin-top:22px}.view.on{display:block;animation:layerIn .42s cubic-bezier(.2,.7,.2,1) both}
+.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.metric{padding:16px}.metric b{font-size:24px}.metric small{letter-spacing:.08em}
+.card{padding:16px;margin:10px 0;display:flex;justify-content:space-between;gap:12px;align-items:center;box-shadow:0 8px 24px #0002}
+.amt{font-size:21px;font-weight:750;text-align:right}
+.mini{border:1px solid var(--line);background:var(--card2);border-radius:10px;padding:8px 10px;margin:5px 0 0 5px;min-height:38px}
+.paid{opacity:.48}.paid .name{text-decoration:line-through}
+.week{background:var(--panel);border:1px solid var(--line);border-radius:20px;overflow:hidden}
+.day{display:grid;grid-template-columns:70px 1fr;gap:12px;padding:14px;border-bottom:1px solid var(--line);min-height:75px}
+.day:last-child{border-bottom:0}
+.event{padding:10px;border-left:5px solid #777;background:var(--card);border-radius:11px;margin:5px;animation:layerIn .42s cubic-bezier(.2,.7,.2,1) both}
+.event.money{border-color:var(--money)}.event.work{border-color:var(--work)}.event.commitments{border-color:var(--commit)}.event.life{border-color:var(--life)}
+.add{position:sticky;bottom:15px;text-align:right;margin-top:20px}
+.add button{border:1px solid #334158;background:#e8eef8;color:#101318;border-radius:999px;padding:13px 19px;font-weight:750;box-shadow:0 10px 30px #0006}
+dialog{border:1px solid var(--line);border-radius:22px;width:min(520px,calc(100% - 24px));background:var(--panel);color:var(--ink);box-shadow:0 30px 80px #000a}
+dialog::backdrop{background:#000b;backdrop-filter:blur(4px)}
+label{display:block;color:var(--muted);font-size:13px;margin:12px 0 5px}
+input,select{width:100%;padding:11px;border:1px solid var(--line);border-radius:10px;background:#0c1016;min-height:44px}
+.check{display:flex;gap:8px;align-items:center;color:var(--ink)}.check input{width:auto}
+.actions{text-align:right;margin-top:18px}.actions button{padding:9px 14px;border-radius:10px;border:1px solid var(--line);margin-left:6px;background:var(--card2)}
+.actions .save{background:#e8eef8;color:#101318;border-color:#e8eef8}
+.parking{padding:20px;border:1px dashed #3a4351;border-radius:18px;color:var(--muted);background:#0d1015}
+@keyframes layerIn{from{opacity:0;transform:translateY(-4px);filter:blur(3px)}to{opacity:1;transform:translateY(0);filter:blur(0)}}
+@media(prefers-reduced-motion:reduce){.view.on,.event{animation:none}.tabs button,.layers button{transition:none}}
+@media(max-width:600px){.summary{grid-template-columns:1fr}.card{align-items:flex-start}h1{font-size:36px}}
+</style>
+<link rel="manifest" href="./manifest.json?v=1121">
+<meta name="theme-color" content="#000000">
+<link rel="apple-touch-icon" href="./life-crescent-192-v1121.png">
+
+<style>
+.brand{display:flex;align-items:center;gap:14px}
+.life-logo{width:62px;height:62px;object-fit:contain;opacity:.5;filter:drop-shadow(0 0 14px rgba(255,255,255,.18))}
+header .muted:last-child{opacity:.5;letter-spacing:.08em}
+@media(max-width:600px){.life-logo{width:52px;height:52px}}
+</style>
+
+<style>
+/* LIFE V6 — Launchpad */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:99999;
+  pointer-events:none;
+  background:#000;
+  animation:lifeLaunchVeil 1.35s cubic-bezier(.22,.72,.25,1) forwards;
+}
+.app{
+  animation:lifeLaunchApp 1.15s cubic-bezier(.22,.72,.25,1) both;
+}
+.life-logo{
+  animation:lifeMoonWake 1.65s cubic-bezier(.22,.72,.25,1) both;
+}
+@keyframes lifeLaunchVeil{
+  0%,16%{opacity:1}
+  58%{opacity:.56}
+  100%{opacity:0;visibility:hidden}
+}
+@keyframes lifeLaunchApp{
+  0%,12%{opacity:0;transform:scale(.992);filter:blur(5px)}
+  62%{opacity:.72;transform:scale(.998);filter:blur(1.5px)}
+  100%{opacity:1;transform:scale(1);filter:blur(0)}
+}
+@keyframes lifeMoonWake{
+  0%,18%{opacity:0;transform:scale(.96);filter:blur(5px) brightness(.75)}
+  64%{opacity:.58;transform:scale(1.015);filter:blur(.6px) brightness(1.12)}
+  100%{opacity:.5;transform:scale(1);filter:blur(0) brightness(1)}
+}
+@media(prefers-reduced-motion:reduce){
+  body::before{animation:none;display:none}
+  .app,.life-logo{animation:none}
+}
+</style>
+
+
+<style>
+/* LIFE V8 — Dashboard */
+.app{max-width:1380px;padding:26px 24px 80px}
+header{display:grid;grid-template-columns:1fr auto;align-items:center;margin-bottom:18px}
+.brand{gap:16px}.life-logo{width:72px;height:72px;opacity:.72;filter:drop-shadow(0 0 18px rgba(255,255,255,.13))}
+.status{margin:18px 0;padding:26px 28px;min-height:150px;display:flex;flex-direction:column;justify-content:center;
+background:
+radial-gradient(circle at 72% 38%,rgba(230,238,255,.08),transparent 18%),
+linear-gradient(135deg,#141a23,#0d1219);position:relative;overflow:hidden}
+.status:after{content:"";position:absolute;right:7%;top:50%;width:88px;height:88px;transform:translateY(-50%);
+background:none;opacity:0}
+.tabs{margin:0 0 18px}.tabs button{padding:11px 21px}
+#now.view.on{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(300px,.7fr);gap:16px;align-items:start}
+#now>h2{grid-column:1/-1;margin:8px 0 0}
+#nowList{grid-column:1}
+
+#week.view.on,#money.view.on,#parking.view.on{animation:layerIn .42s cubic-bezier(.2,.7,.2,1) both}
+.card{min-height:92px;padding:18px 20px}
+.add{position:fixed;right:28px;bottom:26px;z-index:30}
+.add button{padding:14px 22px}
+@media(min-width:900px){
+  #money.view.on{display:grid;grid-template-columns:1fr 2fr;gap:16px;align-items:start}
+  #money>h2{grid-column:1/-1}.summary{grid-template-columns:1fr}.metric{min-height:92px}
+  #moneyList{grid-column:2;grid-row:2}
+  #week.view.on{display:block}
+}
+@media(max-width:760px){
+  #now.view.on{display:block}
+  .status:after{display:none}.life-logo{width:58px;height:58px}
+}
+</style>
+
+
+<style>
+/* LIFE V9 — Functional Dashboard */
+#now.view.on{grid-template-columns:minmax(0,1.55fr) minmax(300px,.72fr)}
+.dash-side{grid-column:2;grid-row:2;display:grid;gap:12px}
+.side-card{background:linear-gradient(145deg,var(--card),var(--panel));border:1px solid var(--line);border-radius:20px;padding:20px}
+.side-kicker{font-size:12px;letter-spacing:.12em;color:var(--muted);font-weight:700;margin-bottom:13px}
+.upcoming-list{display:grid;gap:7px}
+.up-row{display:grid;grid-template-columns:54px 1fr auto;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.up-row:last-child{border-bottom:0}.up-date{font-size:12px;color:var(--muted)}.up-name{font-weight:650}.up-amt{font-weight:750}
+.up-empty{color:var(--muted);line-height:1.5;padding:8px 0}
+.quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.quick-grid button{border:1px solid var(--line);background:var(--card2);border-radius:12px;padding:11px;text-align:left}
+.quick-grid button:active{transform:scale(.98)}
+@media(max-width:760px){#now.view.on{display:block}.dash-side{display:grid;margin-top:14px}.quick-grid{grid-template-columns:1fr 1fr}}
+</style>
+
+<style>
+/* LIFE V11 Attack List */
+#attack.view.on{display:block;animation:layerIn .25s ease both}
+.attack-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:10px 0 12px}
+.attack-bar select,.attack-bar input,.attack-bar button,.attack-tools button{background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:9px;color:var(--ink);font-size:13px}
+.attack-bar input{min-width:140px;flex:1}
+.attack-group{margin:13px 0 19px;border:1px solid var(--line);border-radius:13px;overflow:hidden}
+.attack-heading{padding:10px 12px;background:var(--panel);font-size:12px;letter-spacing:.06em;font-weight:750;color:var(--accent2)}
+.attack-item{display:flex;align-items:center;gap:8px;padding:5px 10px;border-top:1px solid var(--line);min-height:29px;font-size:12px;line-height:1.15}
+.attack-item input{width:15px;height:15px;flex-shrink:0;accent-color:var(--money);margin:0}
+.attack-item .attack-name{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.attack-item.done .attack-name{text-decoration:line-through;opacity:.5}
+.attack-item .attack-pri{font-size:10px;color:var(--muted)}
+.attack-item .attack-due{font-size:10px;color:var(--muted);white-space:nowrap}
+.attack-tools{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.attack-summary{font-size:13px;color:var(--muted)}
+#attackAdd{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap}
+#attackAdd input{flex:1;min-width:160px;background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:9px}
+#attackAdd select,#attackAdd button{background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:9px}
+@media(max-width:560px){.attack-item{font-size:12px;padding:5px 8px}.attack-heading{font-size:11px}.attack-item .attack-name{font-size:12px}}
+#nowAttack{margin:8px 0 14px}#nowAttack .attack-item{background:var(--card2);border:1px solid var(--line);border-radius:8px;margin:4px 0}#nowAttack .attack-heading{background:none;padding:3px 0 8px}#nowAttack .attack-item .attack-name{font-size:13px}#nowAttack .attack-item .attack-pri{font-size:11px}#nowAttack .attack-item input{cursor:pointer}
+.attack-item{min-height:34px;padding:7px 10px}
+@media(max-width:600px){.attack-item{min-height:34px;padding:7px 8px}.attack-bar{gap:6px}.attack-bar input,.attack-bar select{min-width:0}.status{min-height:115px;padding:20px}.brand .life-logo{width:52px;height:52px}}
+</style><style>
+/* LIFE V11.2: strict monochrome system */
+:root{--bg:#000;--panel:#090909;--card:#111;--card2:#191919;--ink:#fff;--muted:#aaa;--line:#343434;--accent:#fff;--accent2:#ddd;--money:#fff;--work:#ddd;--commit:#bbb;--life:#999}
+body{background:#000;color:#fff}
+.status,.side-card,.card,.metric{background:#101010}
+.status{background:linear-gradient(135deg,#151515,#080808)}
+.tabs .on,.layers .on{background:#292929;border-color:#666}
+.add button,.actions .save{background:#fff;color:#000;border-color:#fff}
+.add button{box-shadow:0 10px 30px #0009}
+input,select{background:#111}
+.parking{background:#090909;border-color:#555}
+.attack-item input{accent-color:#fff}
+.attack-heading{color:#fff}
+.event.money,.event.work,.event.commitments,.event.life{border-color:#aaa}
+.life-logo,.brand .life-logo{opacity:1;filter:none}
+@keyframes lifeMoonWake{0%,18%{opacity:0;transform:scale(.96);filter:blur(5px)}64%{opacity:.8;transform:scale(1.01);filter:blur(.5px)}100%{opacity:1;transform:scale(1);filter:none}}
+</style></head><body><div class="app">
+<header><div><div class="brand"><img src="./life-crescent-v1121.png" class="life-logo" alt=""><div><h1>LIFE</h1></div></div><div class="muted" id="today"></div></div><div class="muted">V11.2.2</div></header>
+<div class="status"><small>ORIENTATION</small><h2 style="margin:3px 0">You’re okay.</h2><div id="next">Nothing urgent is waiting.</div></div>
+<nav class="tabs"><button class="on" data-v="now">NOW</button><button data-v="week">WEEK</button><button data-v="money">MONEY</button><button data-v="parking">PARKING LOT</button><button data-v="attack">ATTACK LIST</button></nav>
+<section class="view on" id="now"><h2>What needs attention?</h2><div id="nowAttack" aria-live="polite"></div><div id="nowList"></div>
+<aside class="dash-side">
+  <section class="side-card">
+    <div class="side-kicker">UPCOMING · 7 DAYS</div>
+    <div id="upcoming7" class="upcoming-list"></div>
+  </section>
+  <section class="side-card">
+    <div class="side-kicker">QUICK ADD</div>
+    <div class="quick-grid">
+      <button type="button" data-quick="task">＋ Task</button>
+      <button type="button" data-quick="event">＋ Event</button>
+      <button type="button" data-quick="money">＋ Money</button>
+      <button type="button" data-quick="idea">＋ Idea</button>
+    </div>
+  </section>
+</aside></section>
+<section class="view" id="week"><div class="layers"><button class="on" data-l="money">💵 Money</button><button class="on" data-l="work">💼 Work</button><button class="on" data-l="commitments">📅 Commitments</button><button class="on" data-l="life">✦ Life</button></div><div class="week" id="weekGrid" style="margin-top:12px"></div></section>
+<section class="view" id="money"><h2>Money</h2><div class="summary"><div class="metric"><small>ACTIVE</small><br><b id="active">$0</b></div><div class="metric"><small>NEXT 7 DAYS</small><br><b id="seven">$0</b></div><div class="metric"><small>PAID / CLEARED</small><br><b id="paid">0</b></div></div><div id="moneyList"></div></section>
+<section class="view" id="parking"><h2>Parking Lot</h2><div class="parking">Collections and intentionally deferred items live here. Documented, but excluded from NOW.</div></section>
+<section class="view" id="attack"><h2 style="margin-bottom:4px">Executive Attack List</h2>
+<div class="attack-summary" id="attackCount"></div>
+<div class="attack-bar"><input id="attackSearch" placeholder="Find task…" aria-label="Search tasks"><select id="attackCategory" aria-label="Filter category"><option value="">All categories</option></select><select id="attackFilter" aria-label="Filter status"><option value="open">Open</option><option value="all">All</option><option value="done">Completed</option></select><select id="attackSort" aria-label="Sort"><option value="category">By category</option><option value="priority">By priority</option></select></div>
+<div id="attackList"></div>
+<form id="attackAdd"><input id="attackNew" placeholder="New task…" required maxlength="180" aria-label="New task"><select id="attackNewCategory" aria-label="New task category"></select><button type="submit">＋ Add</button></form>
+<div class="attack-tools"><button type="button" id="attackExport">Export backup</button><button type="button" id="attackImport">Import backup</button><input id="attackFile" type="file" accept="application/json,.json" hidden></div>
+<p class="muted" style="font-size:12px">Tasks save on this device. Your existing LIFE entries are stored separately. Back up before switching phones or clearing browser data.</p></section>
+<div class="add"><button id="add">＋ Add to LIFE</button></div>
+</div>
+<dialog id="dlg"><form id="form"><h2 id="formTitle">Add to LIFE</h2><label>What is it?</label><input id="title" required><label>Date</label><input id="date" type="date" required><label>Layer</label><select id="layer"><option value="money">Money</option><option value="work">Work</option><option value="commitments">Commitments</option><option value="life">Life</option></select><label>Amount (optional)</label><input id="amount" type="number" min="0" step=".01"><label>Priority</label><select id="priority"><option value="protect">Protect</option><option value="normal" selected>Normal</option><option value="later">Later</option></select><label class="check"><input id="recurring" type="checkbox"> Repeat monthly</label><input id="editId" type="hidden"><div class="actions"><button type="button" id="cancel">Cancel</button><button class="save">Save</button></div></form></dialog>
+<script>
+(()=>{const KEY='life-data';let items=[];try{items=JSON.parse(localStorage.getItem(KEY))||[]}catch(e){}const $=id=>document.getElementById(id),save=()=>localStorage.setItem(KEY,JSON.stringify(items)),cash=n=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(n||0),fmt=d=>new Date(d+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}),esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+$('today').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs button,.view').forEach(x=>x.classList.remove('on'));b.classList.add('on');$(b.dataset.v).classList.add('on');render()});
+document.querySelectorAll('.layers button').forEach(b=>b.onclick=()=>{b.classList.toggle('on');week()});
+function card(x){return `<div class="card ${x.status==='paid'?'paid':''}"><div><b class="name">${esc(x.title)}</b><br><small>${fmt(x.date)} · ${x.status==='paid'?'Paid':x.priority==='protect'?'Protect':'Actionable'}${x.recurring?' · Monthly':''}</small></div><div><div class="amt">${x.amount?cash(x.amount):''}</div><button class="mini" data-paid="${x.id}">${x.status==='paid'?'Undo':'Paid'}</button><button class="mini" data-edit="${x.id}">Edit</button><button class="mini" data-del="${x.id}">Delete</button></div></div>`}
+function render(){let m=items.filter(x=>x.layer==='money'),open=m.filter(x=>x.status!=='paid').sort((a,b)=>a.date.localeCompare(b.date));$('next').innerHTML=open[0]?`Next: <b>${esc(open[0].title)}</b>${open[0].amount?' · '+cash(open[0].amount):''} · ${fmt(open[0].date)}`:'Nothing urgent is waiting.';$('nowList').innerHTML=open.slice(0,3).map(card).join('');$('moneyList').innerHTML=m.sort((a,b)=>a.date.localeCompare(b.date)).map(card).join('');$('active').textContent=cash(open.reduce((s,x)=>s+(+x.amount||0),0));let n=new Date();n.setHours(0,0,0,0),e=new Date(n);e.setDate(n.getDate()+7);$('seven').textContent=cash(open.filter(x=>{let d=new Date(x.date+'T12:00:00');return d>=n&&d<=e}).reduce((s,x)=>s+(+x.amount||0),0));$('paid').textContent=m.filter(x=>x.status==='paid').length;bind();week()}
+function bind(){document.querySelectorAll('[data-paid]').forEach(b=>b.onclick=()=>{let x=items.find(i=>i.id===b.dataset.paid);if(x.status!=='paid'&&x.recurring){let d=new Date(x.date+'T12:00:00');d.setMonth(d.getMonth()+1);items.push({...x,id:'i'+Date.now(),date:d.toISOString().slice(0,10),status:'due'})}x.status=x.status==='paid'?'due':'paid';save();render()});document.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{if(confirm('Delete this item?')){items=items.filter(i=>i.id!==b.dataset.del);save();render()}});document.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>openForm(items.find(i=>i.id===b.dataset.edit)))}
+function week(){let sel=[...document.querySelectorAll('.layers .on')].map(b=>b.dataset.l),start=new Date();start.setHours(12,0,0,0),h='';for(let i=0;i<7;i++){let d=new Date(start);d.setDate(start.getDate()+i);let iso=d.toISOString().slice(0,10),a=items.filter(x=>x.date===iso&&sel.includes(x.layer));h+=`<div class="day"><b>${d.toLocaleDateString('en-US',{weekday:'short'}).toUpperCase()}<br><small>${d.getDate()}</small></b><div>${a.map(x=>`<div class="event ${x.layer}"><b>${esc(x.title)}</b>${x.amount?'<br><small>'+cash(x.amount)+'</small>':''}</div>`).join('')||'<small>Open space</small>'}</div></div>`}$('weekGrid').innerHTML=h}
+function openForm(x){$('form').reset();$('formTitle').textContent=x?'Edit LIFE item':'Add to LIFE';$('editId').value=x?.id||'';$('title').value=x?.title||'';$('date').value=x?.date||new Date().toISOString().slice(0,10);$('layer').value=x?.layer||'money';$('amount').value=x?.amount||'';$('priority').value=x?.priority||'normal';$('recurring').checked=!!x?.recurring;$('dlg').showModal()}
+$('add').onclick=()=>openForm();$('cancel').onclick=()=>$('dlg').close();$('form').onsubmit=e=>{e.preventDefault();let id=$('editId').value,obj={title:$('title').value.trim(),date:$('date').value,layer:$('layer').value,amount:Math.max(0,+$('amount').value||0),priority:$('priority').value,recurring:$('recurring').checked,status:'due'};if(id){let i=items.findIndex(x=>x.id===id);items[i]={...items[i],...obj}}else items.push({id:'i'+Date.now(),...obj});save();$('dlg').close();render()};render();if('serviceWorker'in navigator)navigator.serviceWorker.register('./service-worker.js').catch(()=>{})})();
+</script>
+<script>
+(function(){
+  function parseDate(v){
+    if(!v) return null;
+    const d=new Date(v+"T12:00:00");
+    return isNaN(d)?null:d;
+  }
+  function money(v){
+    const n=Number(v);
+    return Number.isFinite(n)&&n!==0 ? "$"+n.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}) : "";
+  }
+  function getItems(){
+    try{
+      const x=JSON.parse(localStorage.getItem("life-data")||"[]");
+      if(Array.isArray(x)) return x;
+      if(x && Array.isArray(x.items)) return x.items;
+    }catch(e){}
+    return [];
+  }
+  function renderUpcoming(){
+    const box=document.getElementById("upcoming7"); if(!box) return;
+    const now=new Date(); now.setHours(0,0,0,0);
+    const end=new Date(now); end.setDate(end.getDate()+7);
+    const rows=getItems().map(x=>({x,d:parseDate(x.date||x.due||x.dueDate)}))
+      .filter(o=>o.d && o.d>=now && o.d<=end && !(o.x.paid||o.x.status==="paid"))
+      .sort((a,b)=>a.d-b.d);
+    if(!rows.length){box.innerHTML='<div class="up-empty">Nothing scheduled in the next seven days. Space is allowed.</div>';return;}
+    box.innerHTML=rows.slice(0,6).map(({x,d})=>{
+      const label=x.name||x.title||x.label||"Untitled";
+      const amt=money(x.amount);
+      const ds=d.toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"});
+      return `<div class="up-row"><div class="up-date">${ds}</div><div class="up-name">${label}</div><div class="up-amt">${amt}</div></div>`;
+    }).join("");
+  }
+  function openExistingAdd(kind){
+    const add=document.querySelector(".add button");
+    if(add) add.click();
+    setTimeout(()=>{
+      const dlg=document.querySelector("dialog[open]");
+      if(!dlg) return;
+      const selects=[...dlg.querySelectorAll("select")];
+      const category=selects.find(s=>[...s.options].some(o=>/money|work|commit|life/i.test(o.value+" "+o.text)));
+      if(category){
+        const wanted=kind==="money"?"money":kind==="event"?"commitments":"life";
+        const opt=[...category.options].find(o=>(o.value+" "+o.text).toLowerCase().includes(wanted));
+        if(opt){category.value=opt.value;category.dispatchEvent(new Event("change",{bubbles:true}));}
+      }
+    },30);
+  }
+  document.addEventListener("click",e=>{
+    const b=e.target.closest("[data-quick]");
+    if(b) openExistingAdd(b.dataset.quick);
+    setTimeout(()=>{if(window.lifeRefreshUpcoming)window.lifeRefreshUpcoming();else renderUpcoming()},80);
+  });
+  window.addEventListener("storage",()=>{if(window.lifeRefreshUpcoming)window.lifeRefreshUpcoming();else renderUpcoming()});
+  document.addEventListener("DOMContentLoaded",()=>{if(window.lifeRefreshUpcoming)window.lifeRefreshUpcoming();else renderUpcoming()});
+  setTimeout(()=>{if(window.lifeRefreshUpcoming)window.lifeRefreshUpcoming();else renderUpcoming()},150);
+})();
+</script>
+
+<script>
+/* LIFE V10: separate local task store; never touches legacy life-data */
+(()=>{
+const KEY='life-attack-v10';
+const $=id=>document.getElementById(id);
+const escapeHTML=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let tasks=[];
+// Private by default. Existing local task data is retained unchanged.
+try { const raw=localStorage.getItem(KEY); const parsed=raw?JSON.parse(raw):[];
+  if(Array.isArray(parsed)) tasks=parsed;
+} catch(e) { console.warn('Could not load saved tasks; restore a backup if needed.'); }
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(tasks))}catch(e){alert('Could not save locally. Export a backup and check device storage.')}};
+// Categories are generic defaults plus categories in this device's own local tasks.
+const categories=[...new Set(['WORK','PERSONAL','FINANCES','PROJECTS','OTHER',...tasks.map(x=>x.category).filter(Boolean)])];
+for(const cat of categories){for(const id of ['attackCategory','attackNewCategory']){const opt=document.createElement('option');opt.value=cat;opt.textContent=cat;$(id).appendChild(opt)}}
+const weekKey=()=>{let d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-(d.getDay()+6)%7);return [d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};
+const isDone=x=>x.recurring?!!(x.doneWeeks&&x.doneWeeks[weekKey()]):!!x.done;
+const setDone=(x,val)=>{if(x.recurring){x.doneWeeks=x.doneWeeks||{};if(val)x.doneWeeks[weekKey()]=true;else delete x.doneWeeks[weekKey()]}else x.done=val;save();render()};
+function render(){let q=$('attackSearch').value.trim().toLowerCase(),cat=$('attackCategory').value,filter=$('attackFilter').value,sort=$('attackSort').value;
+let list=tasks.filter(x=>(!cat||x.category===cat)&&(!q||x.title.toLowerCase().includes(q))&&(filter==='all'||(filter==='done'?isDone(x):!isDone(x))));
+list.sort((a,b)=>sort==='priority'?a.priority.localeCompare(b.priority)||a.category.localeCompare(b.category):a.category.localeCompare(b.category)||a.priority.localeCompare(b.priority));
+const complete=tasks.filter(isDone).length;$('attackCount').textContent=`${complete} of ${tasks.length} completed · ${tasks.length-complete} open`;
+let groups=new Map();for(let x of list){let key=sort==='priority'?x.priority:x.category;if(!groups.has(key))groups.set(key,[]);groups.get(key).push(x)}
+$('attackList').innerHTML=[...groups].map(([key,arr])=>`<div class="attack-group"><div class="attack-heading">${escapeHTML(key)} · ${arr.length}</div>${arr.map(x=>`<label class="attack-item ${isDone(x)?'done':''}" title="${escapeHTML(x.title)}"><input type="checkbox" data-task="${escapeHTML(x.id)}" ${isDone(x)?'checked':''}><span class="attack-name">${escapeHTML(x.title)}</span><span class="attack-pri">${escapeHTML(x.priority||'P3')}</span>${x.recurring?'<span class="attack-due">↻ weekly</span>':x.due?`<span class="attack-due">${escapeHTML(x.due.slice(5))}</span>`:''}</label>`).join('')}</div>`).join('')||'<p class="muted">No matching tasks.</p>';
+$('attackList').querySelectorAll('[data-task]').forEach(el=>el.addEventListener('change',()=>{let x=tasks.find(t=>t.id===el.dataset.task);if(x)setDone(x,el.checked)}));
+renderNowAttack();
+}
+window.lifeRefreshUpcoming=renderAttackUpcoming;
+function renderAttackUpcoming(){
+  const box=$('upcoming7');if(!box)return;
+  const start=new Date();start.setHours(0,0,0,0);
+  const end=new Date(start);end.setDate(end.getDate()+7);
+  const entries=[];
+  const parse=d=>{if(!/^\d{4}-\d{2}-\d{2}$/.test(d||''))return null;const t=new Date(d+'T12:00:00');return isNaN(t)?null:t};
+  tasks.filter(x=>!isDone(x)&&x.due).forEach(x=>{const d=parse(x.due);if(d&&d>=start&&d<=end)entries.push({date:d,title:x.title,source:'TASK'})});
+  try{const raw=JSON.parse(localStorage.getItem('life-data')||'[]');const legacy=Array.isArray(raw)?raw:Array.isArray(raw.items)?raw.items:[];
+    legacy.filter(x=>x.status!=='paid'&&!x.paid).forEach(x=>{const d=parse(x.date||x.due||x.dueDate);if(d&&d>=start&&d<=end)entries.push({date:d,title:x.title||x.name||x.label||'Untitled',source:'LIFE'})});
+  }catch(e){}
+  entries.sort((a,b)=>a.date-b.date);
+  const seen=new Set(),unique=entries.filter(x=>{const key=x.date.toDateString()+'|'+x.title.toLowerCase();if(seen.has(key))return false;seen.add(key);return true});
+  box.innerHTML=unique.length?unique.slice(0,7).map(x=>`<div class="up-row"><div class="up-date">${x.date.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})}</div><div class="up-name">${escapeHTML(x.title)}</div><div class="up-amt">${x.source}</div></div>`).join(''):'<div class="up-empty">No dated items in the next seven days.</div>';
+}
+function renderNowAttack(){
+  const now=new Date(),day=now.getDay(),today=[now.getFullYear(),String(now.getMonth()+1).padStart(2,'0'),String(now.getDate()).padStart(2,'0')].join('-');
+  const pending=tasks.filter(x=>!isDone(x));
+  const relevant=pending.filter(x=>!x.recurring||(x.recurring==='monday'&&day===1)||(x.recurring==='thursday'&&day===4));
+  const score=x=>{
+    let p=x.priority==='P1'?0:x.priority==='P2'?100:200;
+    if(x.due){const days=Math.round((new Date(x.due+'T12:00:00')-new Date(today+'T12:00:00'))/86400000);p+=days<0?-120:days===0?-100:days<=2?-80:days<=7?-40:30;}
+    if(x.recurring)p-=110;
+    return p;
+  };
+  relevant.sort((a,b)=>score(a)-score(b)||(a.due||'9999').localeCompare(b.due||'9999')||a.id.localeCompare(b.id));
+  const top=relevant.slice(0,5),box=$('nowAttack');
+  box.innerHTML=top.length?'<div class="attack-heading">TOP 5 · EXECUTIVE ATTACK LIST</div>'+top.map(x=>`<label class="attack-item" title="${escapeHTML(x.title)}"><input type="checkbox" data-now-task="${escapeHTML(x.id)}"><span class="attack-name">${escapeHTML(x.title)}</span><span class="attack-pri">${escapeHTML(x.priority||'P3')}</span>${x.due?`<span class="attack-due">${escapeHTML(x.due.slice(5))}</span>`:''}</label>`).join(''):'<p class="muted">Attack List clear.</p>';
+  renderAttackUpcoming();
+  box.querySelectorAll('[data-now-task]').forEach(el=>el.addEventListener('change',()=>{const x=tasks.find(t=>t.id===el.dataset.nowTask);if(x)setDone(x,el.checked)}));
+  const orientation=document.querySelector('.status h2'),next=$('next');
+  if(top.length){orientation.textContent='Your priorities are ready.';next.textContent=`${pending.length} open tasks · ${top.length} selected for NOW`;}else{orientation.textContent='You’re okay.';if(!next.textContent||next.textContent==='Nothing urgent is waiting.')next.textContent='Nothing urgent is waiting.';}
+}
+for(let id of ['attackSearch','attackCategory','attackFilter','attackSort'])$(id).addEventListener('input',render);
+$('attackAdd').addEventListener('submit',e=>{e.preventDefault();let title=$('attackNew').value.trim();if(!title)return;tasks.push({id:'custom-'+Date.now()+'-'+Math.random().toString(36).slice(2,7),title,category:$('attackNewCategory').value||'HOME & PERSONAL',priority:'P2',due:'',recurring:'',done:false});$('attackNew').value='';save();render()});
+$('attackExport').addEventListener('click',()=>{let data={format:'LIFE-ATTACK-V10',exportedAt:new Date().toISOString(),tasks,legacyLifeData:JSON.parse(localStorage.getItem('life-data')||'[]')};let blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});let url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='LIFE-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)});
+$('attackImport').addEventListener('click',()=>$('attackFile').click());
+$('attackFile').addEventListener('change',async e=>{let file=e.target.files[0];if(!file)return;try{let data=JSON.parse(await file.text());if(data.format!=='LIFE-ATTACK-V10'||!Array.isArray(data.tasks))throw Error('Not a LIFE V10 backup');if(!confirm('Import tasks from this backup? Existing tasks with the same IDs will be replaced.'))return;let map=new Map(tasks.map(x=>[x.id,x]));data.tasks.forEach(x=>{if(x&&typeof x.id==='string'&&typeof x.title==='string')map.set(x.id,x)});tasks=[...map.values()];save();render();alert('Task backup imported. Existing bills were not changed.')}catch(err){alert('Import failed: '+err.message)}e.target.value=''});
+render();
+})();
+</script></body></html>
